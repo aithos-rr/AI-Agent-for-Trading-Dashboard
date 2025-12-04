@@ -7,6 +7,7 @@ from typing import Any, List, Optional
 import json
 
 import psycopg2
+from psycopg2.extras import DictCursor
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
@@ -474,18 +475,126 @@ async def ui_bot_operations(request: Request):
     )
 
 
+def compute_win_loss_stats():
+    """
+    Versione corretta e compatibile al 100% col tuo database.
+    Ricostruisce le WIN/LOSS usando:
+    - bot_operations (open → close)
+    - indicators_contexts (prezzo nel momento del close)
+    """
+
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=DictCursor) as cur:
+
+            # 1) Preleva tutte le CLOSE
+            cur.execute("""
+                SELECT id, context_id, symbol, direction, created_at
+                FROM bot_operations
+                WHERE operation = 'close'
+                ORDER BY created_at DESC;
+            """)
+            closes = cur.fetchall()
+
+            wins = 0
+            losses = 0
+
+            for close in closes:
+
+                symbol = close["symbol"]
+                direction = close["direction"]
+                close_context = close["context_id"]
+
+                # 2) Trova la OPEN precedente dello stesso symbol
+                cur.execute("""
+                    SELECT id, context_id
+                    FROM bot_operations
+                    WHERE symbol = %s
+                    AND operation = 'open'
+                    AND id < %s
+                    ORDER BY id DESC
+                    LIMIT 1;
+                """, (symbol, close["id"]))
+
+                open_row = cur.fetchone()
+                if not open_row:
+                    continue
+
+                open_context = open_row["context_id"]
+
+                # 3) Prendi il prezzo dall'indicatore riferito al contesto *open*
+                cur.execute("""
+                    SELECT price
+                    FROM indicators_contexts
+                    WHERE context_id = %s
+                    AND ticker = %s
+                    ORDER BY ts DESC
+                    LIMIT 1;
+                """, (open_context, symbol))
+                open_price_row = cur.fetchone()
+
+                if not open_price_row:
+                    continue
+
+                entry_price = float(open_price_row["price"])
+
+                # 4) Prezzo di chiusura dall'indicator del contesto close
+                cur.execute("""
+                    SELECT price
+                    FROM indicators_contexts
+                    WHERE context_id = %s
+                    AND ticker = %s
+                    ORDER BY ts DESC
+                    LIMIT 1;
+                """, (close_context, symbol))
+                close_price_row = cur.fetchone()
+
+                if not close_price_row:
+                    continue
+
+                close_price = float(close_price_row["price"])
+
+                # 5) Determina win/loss
+                if direction == "long":
+                    is_win = close_price > entry_price
+                else:  # short
+                    is_win = close_price < entry_price
+
+                if is_win:
+                    wins += 1
+                else:
+                    losses += 1
+
+            total = wins + losses
+            winrate = (wins / total * 100) if total > 0 else 0
+
+            return {
+                "wins": wins,
+                "losses": losses,
+                "winrate": winrate
+            }
+
+@app.get("/win-loss")
+def win_loss_api():
+    stats = compute_win_loss_stats()
+    return {
+        "wins": stats["wins"],
+        "losses": stats["losses"],
+        "winrate": stats["winrate"],
+    }
+
+
+
 @app.get("/ui/win-loss", response_class=HTMLResponse)
 async def ui_win_loss(request: Request):
-
-    stats = compute_closed_positions_stats()
+    stats = compute_win_loss_stats()
 
     return templates.TemplateResponse(
         "partials/win_loss_chart.html",
         {
             "request": request,
-            "wins": stats.wins,
-            "losses": stats.losses,
-            "winrate": round(stats.win_rate, 2),
+            "wins": stats["wins"],
+            "losses": stats["losses"],
+            "winrate": stats["winrate"],
         },
     )
 

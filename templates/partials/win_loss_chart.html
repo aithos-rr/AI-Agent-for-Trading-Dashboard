@@ -1,96 +1,107 @@
-<div class="winloss-wrapper fade-in">
+<!-- Percentuale a destra -->
+<div class="wl-header">
+    <span>WIN RATE</span>
+    <span class="wl-perc">{{ "%.1f"|format(winrate) }}%</span>
+</div>
 
-    <div class="winloss-stats">
-        <div class="stat">
-            <span class="label">Wins</span>
-            <span class="value green">{{ wins }}</span>
-        </div>
-        <div class="stat">
-            <span class="label">Losses</span>
-            <span class="value red">{{ losses }}</span>
+<!-- Barra completa 100% con verde + rosso -->
+<div class="wl-bar-wrapper">
+    <div class="wl-bar-bg">
+        <div class="wl-bar-full" style="background: linear-gradient(90deg,
+                #4ADE80 0%,
+                #4ADE80 {{ winrate }}%,
+                #EF4444 {{ winrate }}%,
+                #EF4444 100%
+             );">
         </div>
     </div>
-
-    <div class="winloss-bar">
-        <div class="wins-segment" style="width: {{ winrate }}%;"></div>
-        <div class="losses-segment" style="width: {{ 100 - winrate }}%;"></div>
-    </div>
-
-    <p class="winloss-percent">{{ winrate }}%</p>
 </div>
 
 
+<!-- Wins / Losses -->
+<div class="wl-stats">
+    <div class="wl-win">
+        <span class="dot-win"></span> {{ wins }} Wins
+    </div>
+    <div class="wl-loss">
+        <span class="dot-loss"></span> {{ losses }} Losses
+    </div>
+</div>
+
+</div>
+</div>
+
 <style>
-    .winloss-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+    .winloss-container {
+        margin-top: 20px;
     }
 
-    /* Stats row */
-    .winloss-stats {
+    .subtitle {
+        color: #9ca3af;
+        margin-bottom: 15px;
+    }
+
+    .wl-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
     }
 
-    .stat .label {
-        color: #888;
-        font-size: 0.9rem;
+    .wl-perc {
+        font-weight: bold;
     }
 
-    .stat .value {
-        font-size: 1.3rem;
-        font-weight: 700;
+    .wl-bar-wrapper {
+        width: 100%;
+        margin: 10px 0;
     }
 
-    /* Bar */
-    .winloss-bar {
+    .wl-bar-bg {
         width: 100%;
         height: 12px;
-        background: #333;
+        background: #1f2937;
         border-radius: 6px;
         overflow: hidden;
+    }
+
+    .wl-bar-fill {
+        height: 100%;
+        transition: width 0.5s ease;
+        border-radius: 6px;
+    }
+
+    .wl-stats {
         display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        font-size: 1rem;
     }
 
-    .wins-segment {
-        background: #4ade80;
-        height: 100%;
-        transition: width 0.5s ease;
+    .dot-win,
+    .dot-loss {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
     }
 
-    .losses-segment {
-        background: #f87171;
-        height: 100%;
-        transition: width 0.5s ease;
+    .dot-win {
+        background: #4ADE80;
+        /* verde */
     }
 
-    /* Percentage */
-    .winloss-percent {
-        margin-top: 0.5rem;
-        text-align: right;
-        font-size: 1.4rem;
-        font-weight: 600;
+    .dot-loss {
+        background: #EF4444;
+        /* rosso */
     }
 
-    /* Colors */
-    .green {
-        color: #4ade80;
-    }
-
-    .red {
-        color: #f87171;
-    }
-
-    /* Animation */
-    .fade-in {
-        opacity: 0;
-        animation: fadeIn 0.3s ease forwards;
-    }
-
-    @keyframes fadeIn {
-        to {
-            opacity: 1;
-        }
+    .wl-bar-full {
+        width: 100%;
+        height: 12px;
+        border-radius: 6px;
+        transition: opacity .4s;
     }
 </style>
