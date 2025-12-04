@@ -1,0 +1,128 @@
+<div class="positions-grid fade-in">
+
+    {% if positions %}
+    {% for pos in positions %}
+    <div class="card-dark position-card">
+
+        <div class="pos-top">
+            <span class="symbol">{{ pos.symbol }}</span>
+            <span class="side {{ 'green' if pos.side.lower() == 'long' else 'red' }}">
+                {{ pos.side | upper }}
+            </span>
+        </div>
+
+        <div class="pos-row">
+            <span class="label">Entry:</span>
+            <span class="value">${{ pos.entry_price }}</span>
+        </div>
+
+        <div class="pos-row">
+            <span class="label">Mark:</span>
+            <span class="value">${{ pos.mark_price }}</span>
+        </div>
+
+        <div class="pos-row">
+            <span class="label">Size:</span>
+            <span class="value">{{ pos.size }}</span>
+        </div>
+
+        <div class="pos-row">
+            <span class="label">Leverage:</span>
+            <span class="value">{{ pos.leverage }}</span>
+        </div>
+
+        <div class="pos-pnl {{ 'green' if pos.pnl_usd >= 0 else 'red' }}">
+            {% if pos.pnl_usd >= 0 %}
+            +${{ pos.pnl_usd }}
+            {% else %}
+            -${{ pos.pnl_usd | abs }}
+            {% endif %}
+        </div>
+
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-muted">Nessuna posizione aperta.</p>
+    {% endif %}
+
+</div>
+
+
+<style>
+    .positions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Card layout */
+    .position-card {
+        padding: 1.25rem;
+        border-radius: 12px;
+        background: var(--card-bg, #111);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header: symbol and side */
+    .pos-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+
+    .symbol {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .side {
+        font-weight: 600;
+    }
+
+    /* Row: label + value */
+    .pos-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.25rem 0;
+        color: #ccc;
+    }
+
+    .label {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .value {
+        font-size: 0.95rem;
+    }
+
+    /* PnL */
+    .pos-pnl {
+        margin-top: 1rem;
+        font-size: 1.4rem;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .green {
+        color: #4ade80;
+    }
+
+    .red {
+        color: #f87171;
+    }
+
+    /* Fade animation */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+</style>

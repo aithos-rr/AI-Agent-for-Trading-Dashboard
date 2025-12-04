@@ -1,0 +1,229 @@
+<div class="operations-grid">
+
+    {% for op in operations %}
+    <div class="operation-card">
+
+        <!-- Header -->
+        <div class="op-top">
+            <div class="op-title">
+                <span
+                    class="op-type {{ 'green' if op.operation == 'open' else 'red' if op.operation == 'close' else 'gray' }}">
+                    {{ op.operation | upper }}
+                </span>
+                <span class="op-symbol">{{ op.symbol }}</span>
+            </div>
+
+            <div class="op-date">{{ op.created_at_fmt }}</div>
+        </div>
+
+        <!-- Main Info -->
+        <div class="op-info">
+
+            <div class="op-field"><span>ID:</span> {{ op.id }}</div>
+
+            {% if op.direction %}
+            <div class="op-field"><span>Direzione:</span> {{ op.direction | upper }}</div>
+            {% endif %}
+
+            {% if op.target_portion_of_balance is not none %}
+            <div class="op-field"><span>Target:</span> {{ (op.target_portion_of_balance * 100) | round(1) }}%</div>
+            {% endif %}
+
+            {% if op.leverage %}
+            <div class="op-field"><span>Leverage:</span> {{ op.leverage | round(1) }}x</div>
+            {% endif %}
+
+        </div>
+
+        <!-- Indicators block -->
+        {% if op.indicators and op.indicators|length > 0 %}
+        <div class="indicators-box">
+
+            {% if op.indicators.price %}
+            <div class="ind-row">
+                <span>Prezzo:</span> ${{ "%.2f"|format(op.indicators.price) }}
+            </div>
+            {% endif %}
+
+            {% if op.indicators.ema20 %}
+            <div class="ind-row">
+                <span>EMA20:</span> {{ "%.2f"|format(op.indicators.ema20) }}
+            </div>
+            {% endif %}
+
+            {% if op.indicators.macd %}
+            <div class="ind-row">
+                <span>MACD:</span> {{ "%.2f"|format(op.indicators.macd) }}
+            </div>
+            {% endif %}
+
+            {% if op.indicators.rsi %}
+            <div class="ind-row">
+                <span>RSI:</span> {{ "%.2f"|format(op.indicators.rsi) }}
+            </div>
+            {% endif %}
+
+            {% if op.indicators.volume_bid %}
+            <div class="ind-row">
+                <span>Bid Vol:</span> {{ "%.2f"|format(op.indicators.volume_bid) }}
+            </div>
+            {% endif %}
+
+            {% if op.indicators.volume_ask %}
+            <div class="ind-row">
+                <span>Ask Vol:</span> {{ "%.2f"|format(op.indicators.volume_ask) }}
+            </div>
+            {% endif %}
+
+        </div>
+        {% endif %}
+
+        <!-- Description Preview REMOVED -->
+
+        <!-- COLLAPSIBLES -->
+        <details class="op-collapse">
+            <summary>Vedi ragionamento completo</summary>
+            <pre>{{ op.raw_payload.reason or 'N/A' }}</pre>
+        </details>
+
+        {% if op.system_prompt %}
+        <details class="op-collapse">
+            <summary>Vedi full prompt</summary>
+            <pre>{{ op.system_prompt }}</pre>
+        </details>
+        {% endif %}
+
+        <details class="op-collapse">
+            <summary>Vedi JSON completo</summary>
+            <pre>{{ op.raw_payload | tojson(indent=2) }}</pre>
+        </details>
+
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    /* GRID */
+    .operations-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 22px;
+        margin-top: 20px;
+    }
+
+    /* CARD */
+    .operation-card {
+        background: #111;
+        padding: 22px;
+        border-radius: 14px;
+        border: 1px solid #222;
+        transition: 0.25s ease;
+    }
+
+    .operation-card:hover {
+        transform: translateY(-4px);
+        border-color: #444;
+    }
+
+    /* HEADER */
+    .op-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .op-title {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .op-type {
+        font-weight: 700;
+    }
+
+    .op-type.green {
+        color: #4caf50;
+    }
+
+    .op-type.red {
+        color: #ff6b6b;
+    }
+
+    .op-type.gray {
+        color: #bbb;
+    }
+
+    .op-symbol {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .op-date {
+        font-size: 0.9rem;
+        color: #aaa;
+    }
+
+    /* MAIN INFO */
+    .op-info {
+        margin-top: 10px;
+        margin-bottom: 14px;
+    }
+
+    .op-field {
+        color: #ccc;
+        margin-bottom: 4px;
+    }
+
+    .op-field span {
+        color: #777;
+        margin-right: 4px;
+    }
+
+    /* INDICATORS */
+    .indicators-box {
+        background: #181818;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 14px;
+    }
+
+    .ind-row {
+        display: flex;
+        justify-content: space-between;
+        color: #ddd;
+        margin-bottom: 4px;
+    }
+
+    .ind-row span {
+        color: #888;
+    }
+
+    /* COLLAPSIBLE */
+    .op-collapse {
+        margin-top: 8px;
+    }
+
+    .op-collapse summary {
+        cursor: pointer;
+        color: #4da3ff;
+        margin-bottom: 6px;
+    }
+
+    .op-collapse pre {
+        white-space: pre-wrap;
+        background: #0d0d0d;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #222;
+    }
+
+    /* PREVIEW TEXT */
+    .op-reason-preview {
+        color: #ccc;
+        margin-top: 8px;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+</style>

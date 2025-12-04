@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Trading Agent Dashboard{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <main class="container">
+        <header>
+            <div>
+                <h1>LLM Trading Agent Dashboard — Research Edition</h1>
+                <p class="text-muted">
+                    Monitoraggio avanzato delle performance, dei costi e delle operazioni dell'agente di trading.
+                </p>
+            </div>
+            <div>
+                <button class="btn-primary" onclick="window.location.reload()">
+                    🔄 Aggiorna tutto
+                </button>
+            </div>
+        </header>
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

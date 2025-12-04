@@ -1,0 +1,66 @@
+<div class="card-grid fade-in">
+
+    <!-- Saldo Attuale -->
+    <div class="card-dark stat-card">
+        <p class="stat-label">Saldo Attuale</p>
+        <p class="stat-value">${{ "%.2f"|format(current_balance) }}</p>
+    </div>
+
+    <!-- PNL Totale ($) -->
+    <div class="card-dark stat-card">
+        <p class="stat-label">PNL Totale ($)</p>
+        <p class="stat-value {% if total_pnl >= 0 %}pnl-positive{% else %}pnl-negative{% endif %}">
+            {% if total_pnl >= 0 %}
+            +${{ "%.2f"|format(total_pnl) }}
+            {% else %}
+            -${{ "%.2f"|format(total_pnl|abs) }}
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- PNL Totale (%) -->
+    <div class="card-dark stat-card">
+        <p class="stat-label">PNL Totale (%)</p>
+        <p class="stat-value {% if total_pnl_pct >= 0 %}pnl-positive{% else %}pnl-negative{% endif %}">
+            {% if total_pnl_pct >= 0 %}
+            +{{ "%.2f"|format(total_pnl_pct) }}%
+            {% else %}
+            {{ "%.2f"|format(total_pnl_pct|abs) }}%
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Saldo Iniziale -->
+    <div class="card-dark stat-card">
+        <p class="stat-label">Saldo Iniziale</p>
+        <p class="stat-value">${{ "%.2f"|format(initial_balance) }}</p>
+    </div>
+
+</div>
+
+<style>
+    /* Text */
+    .stat-label {
+        font-size: 0.9rem;
+        color: #999;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    /* Fade-in animation */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.4s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+</style>

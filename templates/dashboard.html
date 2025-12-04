@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Research Edition{% endblock %}
+
+{% block content %}
+<section class="dashboard-layout">
+    <!-- 1. Performance Overview -->
+    <section class="full-width">
+        <div id="performance-overview" hx-get="/ui/performance-overview" hx-trigger="load"></div>
+    </section>
+
+    <!-- 2. Posizioni Aperte -->
+    <article class="card-dark full-width">
+        <div class="card-header">
+            <h2>Posizioni Aperte</h2>
+            <p class="text-muted">Snapshot delle posizioni correnti.</p>
+        </div>
+        <div id="open-positions-panel" hx-get="/ui/open-positions" hx-trigger="load">
+            <!-- Loaded via HTMX -->
+        </div>
+    </article>
+
+    <!-- 3. Equity Curve -->
+    <article class="card-dark full-width">
+        <div class="card-header">
+            <h2>Equity Curve</h2>
+            <p class="text-muted">Valore del conto nel tempo.</p>
+        </div>
+        <div id="balance-panel" hx-get="/ui/balance" hx-trigger="load">
+            <!-- Loaded via HTMX -->
+        </div>
+    </article>
+
+    <!-- 4. Win/Loss Ratio -->
+    <article class="card-dark full-width">
+        <div class="card-header">
+            <h2>Win/Loss Ratio</h2>
+            <p class="text-muted">Percentuale operazioni in profitto.</p>
+        </div>
+        <div id="win-loss-panel" hx-get="/ui/win-loss" hx-trigger="load">
+            <!-- Loaded via HTMX -->
+        </div>
+    </article>
+
+    <!-- 5. Cost Analysis -->
+    <article class="card-dark full-width">
+        <div class="card-header">
+            <h2>Cost Analysis</h2>
+            <p class="text-muted">Breakdown costi LLM, fee e tasse.</p>
+        </div>
+        <div id="costs-panel" hx-get="/ui/costs" hx-trigger="load">
+            <!-- Loaded via HTMX -->
+        </div>
+    </article>
+
+    <!-- 6. Recent Operations -->
+    <article class="card-dark full-width">
+        <div class="card-header">
+            <h2>Recent Operations</h2>
+            <p class="text-muted">Ultime 12 operazioni loggate dall'agente.</p>
+        </div>
+        <div id="bot-operations-column" class="operations-column" hx-get="/ui/bot-operations" hx-trigger="load">
+            <!-- Loaded via HTMX -->
+        </div>
+    </article>
+</section>
+{% endblock %}

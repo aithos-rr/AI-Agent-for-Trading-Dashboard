@@ -1,0 +1,117 @@
+<div class="costs-wrapper fade-in">
+
+    <h3 class="section-title">Cost Analysis</h3>
+
+    <!-- CHART -->
+    <div class="chart-container">
+        <canvas id="costsChart"></canvas>
+    </div>
+
+    <!-- TABLE -->
+    <table class="costs-table">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Costo Totale</th>
+                <th>LLM Cost</th>
+                <th>Input Tokens</th>
+                <th>Output Tokens</th>
+                <th>Symbol</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in costs %}
+            <tr>
+                <td>{{ c.created_at }}</td>
+                <td>${{ c.total_cost }}</td>
+                <td>${{ c.llm_cost }}</td>
+                <td>{{ c.input_tokens }}</td>
+                <td>{{ c.output_tokens }}</td>
+                <td>{{ c.symbol }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    const ctx = document.getElementById('costsChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ cost_labels| tojson }},
+        datasets: [{
+            label: 'Cost ($)',
+            data: {{ cost_values| tojson }},
+        backgroundColor: 'rgba(74, 163, 255, 0.4)',
+        borderColor: 'rgba(74, 163, 255, 1)',
+        borderWidth: 1,
+        borderRadius: 4,
+        }]
+    },
+        options: {
+        responsive: true,
+        scales: {
+            y: {
+                ticks: { color: '#aaa' },
+                grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            x: {
+                ticks: { color: '#aaa' },
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
+
+<style>
+    .costs-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .chart-container {
+        background: #111;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .costs-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .costs-table th {
+        text-align: left;
+        padding: 0.5rem;
+        color: #aaa;
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .costs-table td {
+        padding: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .text-muted {
+        color: #888;
+    }
+
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+</style>
